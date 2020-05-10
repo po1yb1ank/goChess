@@ -2,13 +2,21 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"path"
+	"html/template"
 )
+func serveTemplate(w http.ResponseWriter, r *http.Request){
+	tmpl := template.Must(template.ParseFiles(path.Join("templates", "layout.html"), path.Join("templates", "index.html")))
+	if err := tmpl.ExecuteTemplate(w, "layout", nil); err != nil{
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(500), 500)
+	}
+}
 func uploadFile(w http.ResponseWriter, r *http.Request){
+	serveTemplate(w, r)
 	fmt.Fprintf(w, "Uploading file\n")
 	//parse input
 	r.ParseMultipartForm(10 << 20) //20Mb
@@ -47,23 +55,9 @@ func uploadFile(w http.ResponseWriter, r *http.Request){
 func SetupRoutes()	{
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/",fs))
-	http.HandleFunc("/", serveTemplate)//upload file
-	http.HandleFunc("/upload", uploadFile)
+	http.HandleFunc("/", uploadFile)//upload file
+	//http.HandleFunc("/upload", uploadFile)
 	http.ListenAndServe(":8080", nil)
-}
-func serveTemplate(w http.ResponseWriter, r *http.Request){
-
-	/*
-	lp := filepath.Join("templates","layout.html")
-	fp := filepath.Join("templates", filepath.Clean(r.URL.Path))
-	tmpl, _ := template.ParseFiles(lp, fp)
-	 */
-	tmpl := template.Must(template.ParseFiles(path.Join("templates", "layout.html"), path.Join("templates", "index.html")))
-	if err := tmpl.ExecuteTemplate(w, "layout", nil); err != nil{
-		log.Println(err.Error())
-		http.Error(w, http.StatusText(500), 500)
-	}
-
 }
 func main() {
 	fmt.Println("File upload example")
