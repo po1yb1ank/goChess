@@ -42,6 +42,8 @@ func uploadFile(w http.ResponseWriter, r *http.Request){
 
 }
 func SetupRoutes()	{
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/",fs))
 	http.HandleFunc("/upload", uploadFile)
 	http.ListenAndServe(":8080", nil)
 }
