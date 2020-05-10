@@ -1,0 +1,19 @@
+{{define  "layout"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{template "title"}}</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+<body>
+    {{template  "body"}}
+    <form action="http://localhost:8080/upload"
+          enctype="multipart/form-data"
+          method="post">
+            <input type="file" name="File"/>
+            <input type="submit" name="select file.."/>
+    </form>
+</body>
+</html>
+{{end}}
