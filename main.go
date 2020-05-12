@@ -28,7 +28,7 @@ func register(w http.ResponseWriter, r *http.Request){
 
 }
 func uploadFile(w http.ResponseWriter, r *http.Request){
-	serveTemplate(w, r, "login")
+	serveTemplate(w, r, "main")
 	fmt.Fprintf(w, "Uploading file\n")
 	//parse input
 	r.ParseMultipartForm(10 << 20) //20Mb
@@ -76,7 +76,8 @@ func logOut (w http.ResponseWriter, r *http.Request){
 func SetupRoutes()	{
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/",fs))
-	http.HandleFunc("/", uploadFile)//upload file
+	http.HandleFunc("/", logOut)
+	http.HandleFunc("/upload", uploadFile)//upload file
 	http.HandleFunc("/logout", logOut)
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/main", mainPage)
