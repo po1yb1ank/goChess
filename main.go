@@ -19,8 +19,10 @@ func SetupRoutes()	{
 	http.HandleFunc("/logout", controllers.LogOut)
 	http.HandleFunc("/register", controllers.Register)
 	http.HandleFunc("/main", controllers.MainPage)
+	http.HandleFunc("/redirect", controllers.Redirect)
 	//http.HandleFunc("/upload", uploadFile)
 	http.ListenAndServeTLS(":8080","cert.pem","key.pem", nil)
+	//http.ListenAndServe(":8080", nil)
 }
 func main() {
 	fmt.Println("File upload example")

@@ -1,22 +1,15 @@
 package controllers
-
 import (
 	"fmt"
-	"strings"
-
-	//"github.com/patrickmn/go-cache"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"path"
-	//"time"
+	"strings"
 	"uploadServer/database"
-	//"github.com/alexedwards/scs"
 )
-func SetDataBase (){
-
-}
+//pics
 func Init (w http.ResponseWriter, r* http.Request){
 	/* init page, there we will setup database
 	 */
@@ -49,24 +42,30 @@ func ServeTemplate(w http.ResponseWriter, r *http.Request, typeOf string){
 	}
 }
 func Register(w http.ResponseWriter, r *http.Request){
-	ServeTemplate(w,r,"register")
 	//if user already logged in, response reject
 	if database.IfLogged() == true{
-		ServeTemplate(w, r, "main")
+		http.Redirect(w, r, "https://127.0.0.1:8080/redirect", 301)
 	} else {
-		//parse forms
+		if r.Method == "GET"{
+			ServeTemplate(w,r,"register")
+		}
 		r.ParseForm()
 		l := strings.Join(r.Form["login"], "")
 		p := strings.Join(r.Form["password"], "")
-
 		if l != "" && p != ""{
+			fmt.Println(l)
+			fmt.Println(p)
 			database.SetUser(l, p)
 			if database.IfLogged() == true {
-				http.Redirect(w, r, "/main", 307)
+				http.Redirect(w, r, "https://127.0.0.1:8080/redirect", 301)
 			}
 		}
 	}
 
+}
+func Redirect(w http.ResponseWriter, r *http.Request)  {
+
+	http.Redirect(w, r, "/main", 303)
 }
 func UploadFile(w http.ResponseWriter, r *http.Request){
 	ServeTemplate(w, r, "main")
@@ -108,7 +107,6 @@ func UploadFile(w http.ResponseWriter, r *http.Request){
 func MainPage (w http.ResponseWriter, r *http.Request){
 	ServeTemplate(w, r, "main")
 	if database.IfLogged(){
-		fmt.Println(database.SeekDB("poly"))
 	}
 }
 func LogOut (w http.ResponseWriter, r *http.Request){
