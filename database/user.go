@@ -6,7 +6,10 @@ type userData struct {
 	logStatus bool
 }
 var user userData
-func SetUser() {
+func SetUser(l string, p string) {
+	user.login = l
+	user.password = p
+	user.logStatus = true
 
 }
 func IfLogged() bool {

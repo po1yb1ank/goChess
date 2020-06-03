@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"fmt"
+	"strings"
+
 	//"github.com/patrickmn/go-cache"
 	"html/template"
 	"io/ioutil"
@@ -10,6 +12,7 @@ import (
 	"path"
 	//"time"
 	"uploadServer/database"
+	//"github.com/alexedwards/scs"
 )
 func SetDataBase (){
 
@@ -53,9 +56,12 @@ func Register(w http.ResponseWriter, r *http.Request){
 	} else {
 		//parse forms
 		r.ParseForm()
-		fmt.Println(r.Form["login"])
-		fmt.Println(r.Form["password"])
-		database.SetUser()
+		l := strings.Join(r.Form["login"], "")
+		p := strings.Join(r.Form["password"], "")
+		database.SetUser(l, p)
+		if database.IfLogged() == true{
+			MainPage(w, r)
+		}
 	}
 
 }
