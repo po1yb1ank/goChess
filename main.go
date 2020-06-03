@@ -16,6 +16,7 @@ func SetupRoutes()	{
 	http.Handle("/static/", http.StripPrefix("/static/",fs))
 	http.HandleFunc("/", controllers.Init)
 	http.HandleFunc("/upload", controllers.UploadFile)//upload file
+	http.HandleFunc("/login", controllers.Login)
 	http.HandleFunc("/logout", controllers.LogOut)
 	http.HandleFunc("/register", controllers.Register)
 	http.HandleFunc("/main", controllers.MainPage)

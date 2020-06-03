@@ -11,8 +11,10 @@ func SetUser(l string, p string) {
 	user.password = p
 	user.logStatus = true
 	AddDB(user.login, user.password)
-
 }
 func IfLogged() bool {
 	return user.logStatus
+}
+func SetLogStatus(l bool)  {
+	user.logStatus = l
 }

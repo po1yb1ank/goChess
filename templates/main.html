@@ -32,7 +32,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
-                    <a class="nav-link">Hi, %username%
+                    <a class="nav-link">
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
@@ -51,7 +51,8 @@
              <form action="https://localhost:8080/upload"
                 enctype="multipart/form-data"
                 method="post">
-                <input type="file" name="File"/>
+                <input type="file" id="file" name="File"/>
+                 <div id="output"></div>
                 <input type="submit" name="select file.."/>
              </form>
             </ul>
@@ -84,6 +85,26 @@
 
 <!-- Bootstrap core JavaScript -->
 <script src="/static/styles/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    const domFileId='file';
+    document.getElementById(domFileId).addEventListener('change', function(evt) {
+        var file = evt.target.files;
+        var f = file[0];
+
+        if (!f.type.match('image.*')) {
+            //alert("Только изображения плз");
+        }
+        var reader = new FileReader();
+        reader.onload = (function(theFile) {
+            return function(e) {
+                var span = document.createElement('span');
+                span.innerHTML = ['<img height="300" src="', e.target.result, '" />'].join('');
+                document.getElementById('output').insertBefore(span, null);
+            };
+        })(f);
+        reader.readAsDataURL(f);
+    });
+</script>
 </body>
 
 </html>
