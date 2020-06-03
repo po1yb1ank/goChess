@@ -12,13 +12,17 @@
     <title>{{template "title"}}</title>
 
     <!-- Bootstrap core CSS -->
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
     <link href="/static/styles/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
 
 </head>
 
 <body>
 {{template  "body"}}
 <!-- Navigation -->
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
         <a class="navbar-brand" href="">Thebox</a>
@@ -50,16 +54,36 @@
                 <input type="file" name="File"/>
                 <input type="submit" name="select file.."/>
              </form>
-            <h1 class="mt-5">Здесь будет консолька</h1>
             </ul>
+        </div>
+        <div class="container" id="term_demo">
+            <script>jQuery(function($, undefined) {
+                    $('#term_demo').terminal(function(command) {
+                        if (command !== '') {
+                            try {
+                                var result = window.eval(command);
+                                if (result !== undefined) {
+                                    this.echo(new String(result));
+                                }
+                            } catch(e) {
+                                this.error(new String(e));
+                            }
+                        } else {
+                            this.echo('');
+                        }
+                    }, {
+                        greetings: 'JavaScript Interpreter',
+                        name: 'js_demo',
+                        height: 200,
+                        prompt: 'js> '
+                    });
+                });</script>
         </div>
     </div>
 </div>
 
 <!-- Bootstrap core JavaScript -->
-<script src="/static/styles/vendor/jquery/jquery.slim.min.js"></script>
 <script src="/static/styles/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>

@@ -52,15 +52,18 @@ func Register(w http.ResponseWriter, r *http.Request){
 	ServeTemplate(w,r,"register")
 	//if user already logged in, response reject
 	if database.IfLogged() == true{
-		MainPage(w, r)
+		ServeTemplate(w, r, "main")
 	} else {
 		//parse forms
 		r.ParseForm()
 		l := strings.Join(r.Form["login"], "")
 		p := strings.Join(r.Form["password"], "")
-		database.SetUser(l, p)
-		if database.IfLogged() == true{
-			MainPage(w, r)
+
+		if l != "" && p != ""{
+			database.SetUser(l, p)
+			if database.IfLogged() == true {
+				http.Redirect(w, r, "/main", 307)
+			}
 		}
 	}
 
@@ -104,6 +107,9 @@ func UploadFile(w http.ResponseWriter, r *http.Request){
 }
 func MainPage (w http.ResponseWriter, r *http.Request){
 	ServeTemplate(w, r, "main")
+	if database.IfLogged(){
+		fmt.Println(database.SeekDB("poly"))
+	}
 }
 func LogOut (w http.ResponseWriter, r *http.Request){
 	//this is logout func

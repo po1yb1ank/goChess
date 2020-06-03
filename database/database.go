@@ -18,8 +18,9 @@ func DataBaseStatus() bool {
 func AddDB(k string, v string){
 	database.Set(k, v, cache.NoExpiration)
 }
-func SeekDB(k string, v string) (string, string){
+func SeekDB(k string) (string, string){
 	if obj, found := database.Get(k); found {
 		return k, obj.(string)
 	}
+	return "", ""
 }
