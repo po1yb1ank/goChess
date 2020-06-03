@@ -87,7 +87,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request){
 	fmt.Printf("MIME header: %+v\n",handler.Header)
 
 	//write temp file onto server
-	tempFile, err := ioutil.TempFile("temp-images", "upload-*.png")
+	tempFile, err := ioutil.TempFile("temp-images", "upload-*.file")
 	if err != nil{
 		fmt.Println("Uploading error")
 		fmt.Println(err)
