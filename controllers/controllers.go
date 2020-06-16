@@ -126,16 +126,6 @@ func Reader(ws *websocket.Conn)  {
 }
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	ServeTemplate(w, r, "main")
-	upgrader.CheckOrigin = func(r *http.Request) bool {return true}
-	ws, err := upgrader.Upgrade(w, r,nil )
-	if err != nil{
-		fmt.Println("error:", err)
-		return
-	}
-	fmt.Println("Connected")
-	Reader(ws)
-	if database.IfLogged() {
-	}
 }
 func Login(w http.ResponseWriter, r *http.Request)  {
 	ServeTemplate(w, r, "login")
@@ -147,4 +137,15 @@ func LogOut(w http.ResponseWriter, r *http.Request) {
 	database.SetLogStatus(false)
 	http.Redirect(w, r, "/login",302)
 	ServeTemplate(w, r, "login")
+}
+func WS (w http.ResponseWriter, r *http.Request){
+	upgrader.CheckOrigin = func(r *http.Request) bool {return true}
+	ws, err := upgrader.Upgrade(w, r,nil )
+	if err != nil{
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println("Connected")
+
+	Reader(ws)
 }

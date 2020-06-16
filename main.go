@@ -18,6 +18,7 @@ func SetupRoutes()	{
 	http.HandleFunc("/register", controllers.Register)
 	http.HandleFunc("/main", controllers.MainPage)
 	http.HandleFunc("/redirect", controllers.Redirect)
+	http.HandleFunc("/ws", controllers.WS)
 	//http.HandleFunc("/upload", uploadFile)
 	http.ListenAndServeTLS(":8080","cert.pem","key.pem", nil)
 	//http.ListenAndServe(":8080", nil)
