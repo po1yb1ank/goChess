@@ -2,16 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/alexedwards/scs"
 	"net/http"
-	"time"
 	"uploadServer/controllers"
 	//"uploadServer/database"
 )
-var sessionManager *scs.SessionManager
+
 func SetupRoutes()	{
-	sessionManager = scs.New()
-	sessionManager.Lifetime = 24 * time.Hour
+
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/",fs))
 	http.HandleFunc("/", controllers.Init)

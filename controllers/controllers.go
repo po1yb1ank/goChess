@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -11,6 +12,10 @@ import (
 	"uploadServer/database"
 )
 //pics
+var upgrader = websocket.Upgrader{
+	ReadBufferSize: 1024,
+	WriteBufferSize: 1024,
+}
 func Init(w http.ResponseWriter, r *http.Request) {
 	/* init page, there we will setup database
 	 */
@@ -105,8 +110,30 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Successfully uploaded file\n")
 
 }
+func Reader(ws *websocket.Conn)  {
+	for  {
+		messageType, p, err := ws.ReadMessage()
+		if err != nil{
+			//fmt.Println("error at reader", err)
+			return
+		}
+		fmt.Println(string(p))
+		if err := ws.WriteMessage(messageType, p); err != nil{
+			fmt.Println(err)
+			return
+		}
+	}
+}
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	ServeTemplate(w, r, "main")
+	upgrader.CheckOrigin = func(r *http.Request) bool {return true}
+	ws, err := upgrader.Upgrade(w, r,nil )
+	if err != nil{
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println("Connected")
+	Reader(ws)
 	if database.IfLogged() {
 	}
 }

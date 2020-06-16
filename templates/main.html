@@ -13,6 +13,8 @@
 
     <!-- Bootstrap core CSS -->
     <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="/static/styles/js/socket.js"></script>
     <script src="/static/styles/js/chess.js"></script>
     <link href="/static/styles/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet"
@@ -50,7 +52,7 @@
 
 <!-- Page Content -->
 <div class="container">
-    <div id="myBoard" style="width: 400px"></div>
+    <div id="myBoard" style="width: 600px"></div>
     <label>Status:</label>
     <div id="status"></div>
     <label>FEN:</label>
@@ -74,26 +76,7 @@
 
 <!-- Bootstrap core JavaScript -->
 <script src="/static/styles/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!--<script>
-    const domFileId='file';
-    document.getElementById(domFileId).addEventListener('change', function(evt) {
-        var file = evt.target.files;
-        var f = file[0];
 
-        if (!f.type.match('image.*')) {
-            //alert("Только изображения плз");
-        }
-        var reader = new FileReader();
-        reader.onload = (function(theFile) {
-            return function(e) {
-                var span = document.createElement('span');
-                span.innerHTML = ['<img height="300" src="', e.target.result, '" />'].join('');
-                document.getElementById('output').insertBefore(span, null);
-            };
-        })(f);
-        reader.readAsDataURL(f);
-    });
-</script>-->
 <script>
     var board = null
     var game = new Chess()
