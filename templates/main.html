@@ -13,9 +13,13 @@
 
     <!-- Bootstrap core CSS -->
     <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script src="/static/styles/js/chess.js"></script>
     <link href="/static/styles/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" />
-    <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet"
+          href="/static/styles/css/chessboard-1.0.0.css">
+    <script src="/static/styles/js/chessboard-1.0.0.js"></script>
+    <!-- <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" /> -->
+    <!-- <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>-->
 
 </head>
 
@@ -46,8 +50,15 @@
 
 <!-- Page Content -->
 <div class="container">
+    <div id="myBoard" style="width: 400px"></div>
+    <label>Status:</label>
+    <div id="status"></div>
+    <label>FEN:</label>
+    <div id="fen"></div>
+    <label>PGN:</label>
+    <div id="pgn"></div>
     <div class="row">
-        <div class="col-lg-12 text-center">
+        <!--<div class="col-lg-12 text-center">
              <form action="https://localhost:8080/upload"
                 enctype="multipart/form-data"
                 method="post">
@@ -56,36 +67,14 @@
                 <input type="submit" name="select file.."/>
              </form>
             </ul>
-        </div>
-        <div class="container" id="term_demo">
-            <script>jQuery(function($, undefined) {
-                    $('#term_demo').terminal(function(command) {
-                        if (command !== '') {
-                            try {
-                                var result = window.eval(command);
-                                if (result !== undefined) {
-                                    this.echo(new String(result));
-                                }
-                            } catch(e) {
-                                this.error(new String(e));
-                            }
-                        } else {
-                            this.echo('');
-                        }
-                    }, {
-                        greetings: 'JavaScript Interpreter',
-                        name: 'js_demo',
-                        height: 200,
-                        prompt: 'js> '
-                    });
-                });</script>
-        </div>
+        </div>-->
+        <div id="board2" style="width: 400px"></div>
     </div>
 </div>
 
 <!-- Bootstrap core JavaScript -->
 <script src="/static/styles/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script>
+<!--<script>
     const domFileId='file';
     document.getElementById(domFileId).addEventListener('change', function(evt) {
         var file = evt.target.files;
@@ -104,8 +93,90 @@
         })(f);
         reader.readAsDataURL(f);
     });
+</script>-->
+<script>
+    var board = null
+    var game = new Chess()
+    var $status = $('#status')
+    var $fen = $('#fen')
+    var $pgn = $('#pgn')
+
+    function onDragStart (source, piece, position, orientation) {
+        // do not pick up pieces if the game is over
+        if (game.game_over()) return false
+
+        // only pick up pieces for the side to move
+        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            return false
+        }
+    }
+
+    function onDrop (source, target) {
+        // see if the move is legal
+        var move = game.move({
+            from: source,
+            to: target,
+            promotion: 'q' // NOTE: always promote to a queen for example simplicity
+        })
+
+        // illegal move
+        if (move === null) return 'snapback'
+
+        updateStatus()
+    }
+
+    // update the board position after the piece snap
+    // for castling, en passant, pawn promotion
+    function onSnapEnd () {
+        board.position(game.fen())
+    }
+
+    function updateStatus () {
+        var status = ''
+
+        var moveColor = 'White'
+        if (game.turn() === 'b') {
+            moveColor = 'Black'
+        }
+
+        // checkmate?
+        if (game.in_checkmate()) {
+            status = 'Game over, ' + moveColor + ' is in checkmate.'
+        }
+
+        // draw?
+        else if (game.in_draw()) {
+            status = 'Game over, drawn position'
+        }
+
+        // game still on
+        else {
+            status = moveColor + ' to move'
+
+            // check?
+            if (game.in_check()) {
+                status += ', ' + moveColor + ' is in check'
+            }
+        }
+
+        $status.html(status)
+        $fen.html(game.fen())
+        $pgn.html(game.pgn())
+    }
+
+    var config = {
+        pieceTheme: "/static/styles/img/chesspieces/wikipedia/{piece}.png",
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
+    }
+    board = Chessboard('myBoard', config)
+
+    updateStatus()
 </script>
 </body>
-
 </html>
 {{end}}
