@@ -29,6 +29,7 @@ func Init(w http.ResponseWriter, r *http.Request) {
 	//problem: if user already logged
 	if database.DataBaseStatus() == false {
 		database.SetDataBase()
+		database.SetLogStatus(false)
 		ServeTemplate(w, r, "login")
 	}
 }
@@ -59,6 +60,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			r.ParseForm()
 			l := strings.Join(r.Form["login"], "")
 			p := strings.Join(r.Form["password"], "")
+			fmt.Println("login: ",l)
+			fmt.Println("pass: ",p)
 			if l != "" && p != "" {
 				database.SetUser(l, p)
 				if database.IfLogged() == true {
@@ -125,16 +128,44 @@ func Reader(ws *websocket.Conn)  {
 	}
 }
 func MainPage(w http.ResponseWriter, r *http.Request) {
+	if database.IfLogged() == false{
+		http.Redirect(w, r, "/login", 303)
+	}
 	ServeTemplate(w, r, "main")
 }
 func Login(w http.ResponseWriter, r *http.Request)  {
-	ServeTemplate(w, r, "login")
+	if database.IfLogged() == true {
+		http.Redirect(w, r, "/main", 303)
+	} else {
+		if r.Method == "GET" {
+			ServeTemplate(w, r, "login")
+		}
+		if r.Method == "POST" {
+			r.ParseForm()
+			l := strings.Join(r.Form["login"], "")
+			p := strings.Join(r.Form["password"], "")
+			fmt.Println("login: ",l)
+			fmt.Println("pass: ",p)
+			if l != "" && p != "" {
+				if database.IfLogged() == true {
+					http.Redirect(w,r,"/main", 301)
+				}
+				if k,v := database.SeekDB(l); k!= "" && v == p && l == k{
+					database.SetCurrentUser(l, p)
+					http.Redirect(w,r,"/main", 301)
+				}else{
+					http.Redirect(w,r,"/login", 303)
+					//ServeTemplate(w, r, "login")
+				}
+			}
+		}
+	}
 }
 func LogOut(w http.ResponseWriter, r *http.Request) {
 	//this is logout func
 	//logout execution
 	//redirect to login
-	database.SetLogStatus(false)
+	database.ClearUser()
 	http.Redirect(w, r, "/login",302)
 	ServeTemplate(w, r, "login")
 }
@@ -148,4 +179,7 @@ func WS (w http.ResponseWriter, r *http.Request){
 	fmt.Println("Connected")
 
 	Reader(ws)
+}
+func UserFail(w http.ResponseWriter, r *http.Request)  {
+	ServeTemplate(w, r, "login")
 }
