@@ -17,6 +17,7 @@ func SetupRoutes()	{
 	http.HandleFunc("/logout", controllers.LogOut)
 	http.HandleFunc("/register", controllers.Register)
 	http.HandleFunc("/main", controllers.MainPage)
+	http.HandleFunc("/room", controllers.Room)
 	http.HandleFunc("/redirect", controllers.Redirect)
 	http.HandleFunc("/ws", controllers.WS)
 	//http.HandleFunc("/upload", uploadFile)

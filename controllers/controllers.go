@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"sync"
 	"uploadServer/database"
 	"github.com/gorilla/sessions"
 )
@@ -18,6 +19,7 @@ var (
 	key = []byte("super-secret-key")
 	store = sessions.NewCookieStore(key)
 )
+var doOnce sync.Once
 var upgrader = websocket.Upgrader{
 	ReadBufferSize: 1024,
 	WriteBufferSize: 1024,
@@ -35,6 +37,7 @@ func Init(w http.ResponseWriter, r *http.Request) {
 	}
 	//problem: if user already logged
 	if database.DataBaseStatus() == false {
+		database.InitRooms()
 		database.SetDataBase()
 		ServeTemplate(w, r, "login")
 	}
@@ -46,6 +49,8 @@ func ServeTemplate(w http.ResponseWriter, r *http.Request, typeOf string) {
 		tmpl = template.Must(template.ParseFiles(path.Join("templates", "index.html"), path.Join("templates", "login.html")))
 	case "main":
 		tmpl = template.Must(template.ParseFiles(path.Join("templates", "index.html"), path.Join("templates", "main.html")))
+	case "room":
+		tmpl = template.Must(template.ParseFiles(path.Join("templates", "index.html"), path.Join("templates", "room.html")))
 	case "register":
 		tmpl = template.Must(template.ParseFiles(path.Join("templates", "index.html"), path.Join("templates", "register.html")))
 	}
@@ -144,8 +149,22 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	// Check if user is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", 303)
-	}else{
-		ServeTemplate(w, r, "main")
+	} else {
+		if r.Method == "GET" {
+			ServeTemplate(w, r, "main")
+		}
+		if r.Method == "POST" {
+			r.ParseForm()
+			room := strings.Join(r.Form["room"], "")
+			fmt.Println(room)
+			database.NewRoom(room)
+			if database.IfRoomAvailable() == true{
+				http.Redirect(w, r, "/room", 303)
+			}else{
+				fmt.Println("room is full")
+				http.Redirect(w, r, "/main", 303)
+			}
+		}
 	}
 }
 func Login(w http.ResponseWriter, r *http.Request)  {
@@ -196,6 +215,9 @@ func WS (w http.ResponseWriter, r *http.Request){
 		return
 	}
 	fmt.Println("Connected")
-
+	database.AddRoomPlayer(ws)
 	Reader(ws)
+}
+func Room (w http.ResponseWriter, r *http.Request){
+	ServeTemplate(w, r, "room")
 }
