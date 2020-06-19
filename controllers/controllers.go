@@ -10,8 +10,14 @@ import (
 	"path"
 	"strings"
 	"uploadServer/database"
+	"github.com/gorilla/sessions"
 )
 //pics
+var (
+	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
+	key = []byte("super-secret-key")
+	store = sessions.NewCookieStore(key)
+)
 var upgrader = websocket.Upgrader{
 	ReadBufferSize: 1024,
 	WriteBufferSize: 1024,
@@ -19,17 +25,17 @@ var upgrader = websocket.Upgrader{
 func Init(w http.ResponseWriter, r *http.Request) {
 	/* init page, there we will setup database
 	 */
+	session, _ := store.Get(r, "cookie-name")
 	if database.DataBaseStatus() == true {
-		if database.IfLogged() == true {
-			http.Redirect(w,r,"/main",302)
+		if auth, ok := session.Values["authenticated"].(bool); !ok || !auth  {
+			http.Redirect(w,r,"/login",302)
 		} else {
-			ServeTemplate(w, r, "login")
+			http.Redirect(w,r,"/main",302)
 		}
 	}
 	//problem: if user already logged
 	if database.DataBaseStatus() == false {
 		database.SetDataBase()
-		database.SetLogStatus(false)
 		ServeTemplate(w, r, "login")
 	}
 }
@@ -50,25 +56,31 @@ func ServeTemplate(w http.ResponseWriter, r *http.Request, typeOf string) {
 }
 func Register(w http.ResponseWriter, r *http.Request) {
 	//if user already logged in, response reject
-	if database.IfLogged() == true {
-		http.Redirect(w, r, "https://127.0.0.1:8080/redirect", 301)
-	} else {
+	var l, p string
+	session, _ := store.Get(r, "cookie-name")
+	// Check if user is authenticated
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		if r.Method == "GET" {
 			ServeTemplate(w, r, "register")
 		}
 		if r.Method == "POST" {
 			r.ParseForm()
-			l := strings.Join(r.Form["login"], "")
-			p := strings.Join(r.Form["password"], "")
+			l = strings.Join(r.Form["login"], "")
+			p = strings.Join(r.Form["password"], "")
 			fmt.Println("login: ",l)
 			fmt.Println("pass: ",p)
 			if l != "" && p != "" {
 				database.SetUser(l, p)
-				if database.IfLogged() == true {
+				/*if database.IfLogged() == true {
 					http.Redirect(w, r, "https://127.0.0.1:8080/redirect", 301)
-				}
+				}*/
+				session.Values["authenticated"] = true
+				session.Save(r, w)
+				http.Redirect(w, r, "/main", 303)
 			}
 		}
+	}else{
+		http.Redirect(w, r, "/main", 303)
 	}
 
 }
@@ -128,15 +140,18 @@ func Reader(ws *websocket.Conn)  {
 	}
 }
 func MainPage(w http.ResponseWriter, r *http.Request) {
-	if database.IfLogged() == false{
+	session, _ := store.Get(r, "cookie-name")
+	// Check if user is authenticated
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", 303)
+	}else{
+		ServeTemplate(w, r, "main")
 	}
-	ServeTemplate(w, r, "main")
 }
 func Login(w http.ResponseWriter, r *http.Request)  {
-	if database.IfLogged() == true {
-		http.Redirect(w, r, "/main", 303)
-	} else {
+	session, _ := store.Get(r, "cookie-name")
+	// Check if user is authenticated
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		if r.Method == "GET" {
 			ServeTemplate(w, r, "login")
 		}
@@ -147,18 +162,19 @@ func Login(w http.ResponseWriter, r *http.Request)  {
 			fmt.Println("login: ",l)
 			fmt.Println("pass: ",p)
 			if l != "" && p != "" {
-				if database.IfLogged() == true {
-					http.Redirect(w,r,"/main", 301)
-				}
 				if k,v := database.SeekDB(l); k!= "" && v == p && l == k{
-					database.SetCurrentUser(l, p)
-					http.Redirect(w,r,"/main", 301)
+					fmt.Println("found!")
+					session.Values["authenticated"] = true
+					session.Save(r, w)
+					http.Redirect(w,r,"/main", 303)
 				}else{
 					http.Redirect(w,r,"/login", 303)
 					//ServeTemplate(w, r, "login")
 				}
 			}
 		}
+	}else {
+		http.Redirect(w,r,"/main", 301)
 	}
 }
 func LogOut(w http.ResponseWriter, r *http.Request) {
@@ -166,6 +182,9 @@ func LogOut(w http.ResponseWriter, r *http.Request) {
 	//logout execution
 	//redirect to login
 	database.ClearUser()
+	session, _ := store.Get(r, "cookie-name")
+	session.Values["authenticated"] = false
+	session.Save(r, w)
 	http.Redirect(w, r, "/login",302)
 	ServeTemplate(w, r, "login")
 }
