@@ -199,6 +199,3 @@ func WS (w http.ResponseWriter, r *http.Request){
 
 	Reader(ws)
 }
-func UserFail(w http.ResponseWriter, r *http.Request)  {
-	ServeTemplate(w, r, "login")
-}
