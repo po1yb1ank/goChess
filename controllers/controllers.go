@@ -70,9 +70,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			r.ParseForm()
 			l = strings.Join(r.Form["login"], "")
 			p = strings.Join(r.Form["password"], "")
-			fmt.Println("login: ",l)
-			fmt.Println("pass: ",p)
-			if l != "" && p != "" {
+			fmt.Println("login: ", l)
+			fmt.Println("pass: ", p)
+			if len(l) > 4 && len(p) > 6 {
+				if x, _ := database.SeekDB(l); x == "" {
 				database.SetUser(l, p)
 				/*if database.IfLogged() == true {
 					http.Redirect(w, r, "https://127.0.0.1:8080/redirect", 301)
@@ -80,7 +81,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				session.Values["authenticated"] = true
 				session.Save(r, w)
 				http.Redirect(w, r, "/main", 303)
-			}else{
+				}else{
+					http.Redirect(w, r, "/login", 303)
+				}
+			} else{
 				http.Redirect(w, r, "/register", 303)
 			}
 		}
@@ -220,6 +224,7 @@ func WS (w http.ResponseWriter, r *http.Request){
 	}
 	fmt.Println("Connected")
 	database.AddRoomPlayer(ws)
+	fmt.Println("now room is", database.IfRoomAvailable())
 	Reader(ws)
 }
 func Room (w http.ResponseWriter, r *http.Request){

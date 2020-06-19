@@ -42,14 +42,18 @@ func AddRoomPlayer(ws *websocket.Conn)  {
 	fmt.Println("for",&ws)
 	if thisRoom, ok := allRooms[cRoom];ok{
 		if thisRoom.player1 == nil{
+			fmt.Println("ws1")
 			thisRoom.player1 = ws
 			allRooms[cRoom] = thisRoom
+			thisRoom.player1.WriteMessage(1,[]byte(thisRoom.col1))
 			return
 		}
 		if thisRoom.player1 != nil && thisRoom.player2 == nil{
+			fmt.Println("ws2")
 			thisRoom.player2 = ws
 			thisRoom.available = false
 			allRooms[cRoom] = thisRoom
+			thisRoom.player2.WriteMessage(1,[]byte(thisRoom.col2))
 			return
 		}
 	}
@@ -67,5 +71,12 @@ func PosChange(mt int, pos []byte)  {
 	if thisRoom, ok := allRooms[cRoom]; ok{
 		thisRoom.player1.WriteMessage(mt, pos)
 		thisRoom.player2.WriteMessage(mt, pos)
+	}
+}
+func SendSides(mt int)  {
+	if thisRoom, ok := allRooms[cRoom]; ok{
+		fmt.Println([]byte(thisRoom.col1))
+		thisRoom.player1.WriteMessage(mt, []byte(thisRoom.col1))
+		thisRoom.player2.WriteMessage(mt, []byte(thisRoom.col2))
 	}
 }
