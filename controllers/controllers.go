@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"html/template"
 	"io/ioutil"
@@ -9,9 +10,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
-	"sync"
 	"uploadServer/database"
-	"github.com/gorilla/sessions"
 )
 //pics
 var (
@@ -19,7 +18,6 @@ var (
 	key = []byte("super-secret-key")
 	store = sessions.NewCookieStore(key)
 )
-var doOnce sync.Once
 var upgrader = websocket.Upgrader{
 	ReadBufferSize: 1024,
 	WriteBufferSize: 1024,
@@ -82,6 +80,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				session.Values["authenticated"] = true
 				session.Save(r, w)
 				http.Redirect(w, r, "/main", 303)
+			}else{
+				http.Redirect(w, r, "/register", 303)
 			}
 		}
 	}else{
@@ -187,10 +187,13 @@ func Login(w http.ResponseWriter, r *http.Request)  {
 					session.Values["authenticated"] = true
 					session.Save(r, w)
 					http.Redirect(w,r,"/main", 303)
-				}else{
+				} else{
 					http.Redirect(w,r,"/login", 303)
-					//ServeTemplate(w, r, "login")
+					ServeTemplate(w, r, "login")
 				}
+			} else{
+				http.Redirect(w,r,"/login", 303)
+				ServeTemplate(w, r, "login")
 			}
 		}
 	}else {
