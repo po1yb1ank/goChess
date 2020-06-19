@@ -63,3 +63,9 @@ func IfRoomAvailable() bool  {
 	fmt.Println("no check")
 	return false
 }
+func PosChange(mt int, pos []byte)  {
+	if thisRoom, ok := allRooms[cRoom]; ok{
+		thisRoom.player1.WriteMessage(mt, pos)
+		thisRoom.player2.WriteMessage(mt, pos)
+	}
+}

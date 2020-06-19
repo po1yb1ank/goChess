@@ -134,14 +134,15 @@ func Reader(ws *websocket.Conn)  {
 	for  {
 		messageType, p, err := ws.ReadMessage()
 		if err != nil{
-			//fmt.Println("error at reader", err)
+			fmt.Println("error at reader", err)
 			return
 		}
 		fmt.Println(string(p))
-		if err := ws.WriteMessage(messageType, p); err != nil{
+		/*if err := ws.WriteMessage(messageType, p); err != nil{
 			fmt.Println(err)
 			return
-		}
+		}*/
+		database.PosChange(messageType,p)
 	}
 }
 func MainPage(w http.ResponseWriter, r *http.Request) {
