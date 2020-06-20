@@ -11,8 +11,8 @@ socket.onopen = () =>{
         alert(error)
     }
     socket.onmessage = (msg) =>{
-        alert(msg.data.toString())
-        if(msg.data.toString() ==='gs'){
+       // alert(msg.data.toString())
+        if(msg.data.toString() =='gs'){
             alert("Both connected. Game started")
             gs = true
         }else if(msg.data.toString() === 'w' || msg.data.toString() === 'b'){
