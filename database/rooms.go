@@ -54,6 +54,8 @@ func AddRoomPlayer(ws *websocket.Conn)  {
 			thisRoom.available = false
 			allRooms[cRoom] = thisRoom
 			thisRoom.player2.WriteMessage(1,[]byte(thisRoom.col2))
+			thisRoom.player1.WriteMessage(1,[]byte("gs"))
+			thisRoom.player2.WriteMessage(1,[]byte("gs"))
 			return
 		}
 	}

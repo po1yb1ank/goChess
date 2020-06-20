@@ -1,6 +1,7 @@
 let socket = new WebSocket("wss://gochess.herokuapp.com/ws")
 socket.onopen = () =>{
     var myCol
+    var gs = false
     console.log("success connect from client")
     //socket.send("hi from client")
     socket.onclose = (event) =>{
@@ -11,12 +12,14 @@ socket.onopen = () =>{
     }
     socket.onmessage = (msg) =>{
         //alert(msg.data.toString())
+        if(msg.data.toString() ==="gs"){
+            alert("Both connected.Game started")
+            gs = true
+        }
         if(msg.data.toString() === 'w' || msg.data.toString() === 'b'){
             myCol = msg.data.toString()
-            if(myCol == 'b'){
-                alert("Player 2 connected. Game started!")
+                alert("Connected.")
                 alert("your color is "+myCol)
-            }
             //game.setTurn(myCol)
         }else{
             game.load(msg.data.toString())
@@ -38,7 +41,7 @@ socket.onopen = () =>{
         if (game.game_over()) return false
 
         // only pick up pieces for the side to move
-        if (game.turn() !== myCol) {
+        if ((game.turn() !== myCol)||(gs == false)) {
             return false
         }
 
