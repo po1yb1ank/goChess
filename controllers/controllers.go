@@ -228,5 +228,9 @@ func WS (w http.ResponseWriter, r *http.Request){
 	Reader(ws)
 }
 func Room (w http.ResponseWriter, r *http.Request){
+	session, _ := store.Get(r, "cookie-name")
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Redirect(w,r,"/login", 303)
+	}
 	ServeTemplate(w, r, "room")
 }
