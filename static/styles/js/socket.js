@@ -34,7 +34,7 @@ socket.onopen = () =>{
     var game = new Chess()
     var $status = $('#status')
     var $fen = $('#fen')
-    var $pgn = $('#pgn')
+    //var $pgn = $('#pgn')
     var m
     function onDragStart (source, piece, position, orientation) {
         // do not pick up pieces if the game is over
@@ -97,7 +97,7 @@ socket.onopen = () =>{
 
         $status.html(status)
         $fen.html(game.fen())
-        $pgn.html(game.pgn())
+        //$pgn.html(game.pgn())
     }
 
     var config = {
