@@ -50,12 +50,14 @@ func AddRoomPlayer(ws *websocket.Conn)  {
 		}
 		if thisRoom.player1 != nil && thisRoom.player2 == nil{
 			fmt.Println("ws2")
+			var gs string
+			gs = "gs"
 			thisRoom.player2 = ws
 			thisRoom.available = false
 			allRooms[cRoom] = thisRoom
 			thisRoom.player2.WriteMessage(1,[]byte(thisRoom.col2))
-			thisRoom.player1.WriteMessage(1,[]byte("gs"))
-			thisRoom.player2.WriteMessage(1,[]byte("gs"))
+			thisRoom.player2.WriteMessage(1,[]byte(gs))
+			thisRoom.player1.WriteMessage(1,[]byte(gs))
 			return
 		}
 	}

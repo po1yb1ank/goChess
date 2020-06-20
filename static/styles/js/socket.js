@@ -15,13 +15,12 @@ socket.onopen = () =>{
         if(msg.data.toString() ==='gs'){
             alert("Both connected. Game started")
             gs = true
-        }
-        if(msg.data.toString() === 'w' || msg.data.toString() === 'b'){
+        }else if(msg.data.toString() === 'w' || msg.data.toString() === 'b'){
             myCol = msg.data.toString()
                 alert("Connected.")
                 alert("your color is "+myCol)
             //game.setTurn(myCol)
-        }else{
+        }else {
             game.load(msg.data.toString())
             board.position(msg.data.toString())
             m = msg.data.toString().split(" ")
