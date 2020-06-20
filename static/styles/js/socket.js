@@ -13,6 +13,10 @@ socket.onopen = () =>{
         //alert(msg.data.toString())
         if(msg.data.toString() === 'w' || msg.data.toString() === 'b'){
             myCol = msg.data.toString()
+            if(myCol == 'b'){
+                alert("Player 2 connected. Game started!")
+                alert("your color is "+myCol)
+            }
             //game.setTurn(myCol)
         }else{
             game.load(msg.data.toString())
