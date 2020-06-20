@@ -1,4 +1,4 @@
-let socket = new WebSocket("wss://localhost:8080/ws")
+let socket = new WebSocket("ws://localhost:8080/ws")
 socket.onopen = () =>{
     var myCol
     console.log("success connect from client")
