@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://gochess.herokuapp.com/ws")
+let socket = new WebSocket("wss://gochess.herokuapp.com/ws")
 socket.onopen = () =>{
     var myCol
     console.log("success connect from client")
