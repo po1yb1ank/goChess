@@ -21,7 +21,7 @@ func SetupRoutes()	{
 	http.HandleFunc("/redirect", controllers.Redirect)
 	http.HandleFunc("/ws", controllers.WS)
 	//http.HandleFunc("/upload", uploadFile)
-	http.ListenAndServeTLS(":8080","cert.pem","key.pem", nil)
+	http.ListenAndServeTLS(":5565","cert.pem","key.pem", nil)
 	//http.ListenAndServe(":8080", nil)
 }
 func main() {
