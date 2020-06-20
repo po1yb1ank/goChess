@@ -1,0 +1,27 @@
+{
+	"ImportPath": "uploadServer",
+	"GoVersion": "go1.13",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "github.com/gorilla/securecookie",
+			"Comment": "v1.1.1-12-g61b4ad1",
+			"Rev": "61b4ad17eb88d0d1118560d1101176279be2bc88"
+		},
+		{
+			"ImportPath": "github.com/gorilla/sessions",
+			"Comment": "v1.2.0-5-g15ff351",
+			"Rev": "15ff3511704639ab26f7843f780c015f4bf49565"
+		},
+		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Comment": "v1.4.2",
+			"Rev": "b65e62901fc1c0d968042419e74789f6af455eb9"
+		},
+		{
+			"ImportPath": "github.com/patrickmn/go-cache",
+			"Comment": "v2.1.0-4-g46f4078",
+			"Rev": "46f407853014144407b6c2ec7ccc76bf67958d93"
+		}
+	]
+}
