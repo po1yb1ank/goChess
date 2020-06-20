@@ -72,7 +72,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			p = strings.Join(r.Form["password"], "")
 			fmt.Println("login: ", l)
 			fmt.Println("pass: ", p)
-			if len(l) > 4 && len(p) > 6 {
+			if len(l) > 3 && len(p) > 5 {
 				if x, y := database.SeekDB(l); x == "" || y == "" {
 				database.SetUser(l, p)
 				/*if database.IfLogged() == true {
