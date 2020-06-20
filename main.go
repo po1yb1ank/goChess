@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"uploadServer/controllers"
 	//"uploadServer/database"
 )
@@ -21,7 +22,7 @@ func SetupRoutes()	{
 	http.HandleFunc("/redirect", controllers.Redirect)
 	http.HandleFunc("/ws", controllers.WS)
 	//http.HandleFunc("/upload", uploadFile)
-	http.ListenAndServeTLS(":5565","cert.pem","key.pem", nil)
+	http.ListenAndServeTLS(":"+os.Getenv("PORT"),"cert.pem","key.pem", nil)
 	//http.ListenAndServe(":8080", nil)
 }
 func main() {
