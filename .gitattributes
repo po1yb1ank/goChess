@@ -1,7 +1,2 @@
 * linguist-vendored
-*.go linguist-vendored=true
-*.css linguist-vendored=false
-*.scss linguist-vendored=false
-*.js linguist-vendored=false
-*.html linguist-vendored=false
-*.xml linguist-vendored=false
+*.go linguist-vendored=false
